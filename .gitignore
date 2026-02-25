@@ -1,0 +1,50 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
+
+# Build
+/dist/
+/build/
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+*.dockerfile
+docker-compose.yml
+
+# Misc
+.idea/
+.vscode/
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+
+# Ignore files directory
+/files/
+
+# Coverage
+coverage/
+
+# Others
+*.swp
+*.swo
+
+# Ignore test output
+/test-output/
