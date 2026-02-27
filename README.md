@@ -10,22 +10,10 @@ This project is a Dockerized file server for serving static files (such as image
 ## API
 - Only GET requests are allowed
 - No endpoints for file upload, update, or delete
-## Running with Docker
 
-### 1. Build the Docker image
+### Build the Docker image
 ```
 docker build -t lucidkarn/lucian-solutions-file-server:latest .
 ```
 
-### 2. Run the container
-```
-docker run -d -p 3000:80 -v $(pwd)/files:/usr/src/app/files lucidkarn/lucian-solutions-file-server:latest
-```
-
-### 3. Access files
-Open your browser or use HTTP requests to access files:
-```
-http://localhost:3000/files/yourfile.jpg
-```
-
-You can add files to the `files/` directory on your host, and they will be served by the container.
+You can add files to the `/files/` directory on your host, and they will be served by the container.
