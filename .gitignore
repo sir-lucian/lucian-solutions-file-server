@@ -24,7 +24,7 @@ Thumbs.db
 *.tsbuildinfo
 
 # Docker
-*.dockerfile
+Dockerfile
 docker-compose.yml
 
 # Misc

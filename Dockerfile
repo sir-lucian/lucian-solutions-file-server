@@ -1,13 +1,9 @@
-FROM node:20-alpine
+FROM nginx:alpine
 
-WORKDIR /usr/src/app
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY . .
-
-RUN npm install && npm run build
+# Copy static files into the image
+COPY files /usr/share/nginx/html/files
 
 EXPOSE 80
-
-RUN ls -l /usr/src/app && ls -l /usr/src/app/dist
-
-CMD ["npm", "start"]
