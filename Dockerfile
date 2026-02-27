@@ -2,14 +2,12 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-COPY package.json .
-COPY tsconfig.json .
-COPY src ./src
-COPY files ./files
-RUN mkdir -p files
+COPY . .
 
 RUN npm install && npm run build
 
 EXPOSE 80
+
+RUN ls -l /usr/src/app && ls -l /usr/src/app/dist
 
 CMD ["npm", "start"]
