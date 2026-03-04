@@ -40,6 +40,6 @@ node scripts/convert-to-webp.js ./files
 What the script does:
 - Recursively finds `.png`, `.jpg`, `.jpeg`, and `.gif` files
  - For PNG/JPG/JPEG: skips conversion if `file.ext.webp` already exists; resizes so neither width nor height exceed 1024px (keeps aspect ratio, no upscaling), then writes `file.ext.webp` alongside the original with quality 80
- - For GIF: skips conversion if `file.webm` already exists; converts to WebM using `ffmpeg` while scaling so the larger dimension is at most 1024px, and writes `file.webm` (replaces the `.gif` extension)
+ - For GIF: skips conversion if `file.gif.webm` already exists; converts to WebM using `ffmpeg` while scaling so the larger dimension is at most 1024px, and writes `file.gif.webm` (appends the original `.gif` extension)
 
 You can pass a different directory as the first argument.

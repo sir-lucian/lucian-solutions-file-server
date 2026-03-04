@@ -49,7 +49,8 @@ async function walk(dir) {
 
         // Handle GIF -> WebM conversion (requires ffmpeg installed)
         if (ext === gifExt) {
-            const outPath = full.replace(/\.gif$/i, '.webm');
+            // Keep the original extension in the output filename, e.g. "name.gif.webm"
+            const outPath = full + '.webm';
             try {
                 // Skip if output already exists
                 await fs.promises.access(outPath, fs.constants.F_OK)
