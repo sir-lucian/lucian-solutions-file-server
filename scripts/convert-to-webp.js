@@ -11,6 +11,12 @@ const startDir = process.argv[2] || path.join(process.cwd(), "files");
 const exts = [".png", ".jpg", ".jpeg"];
 const gifExt = ".gif";
 const { spawnSync } = require('child_process');
+let ffmpegPath;
+try {
+    ffmpegPath = require('ffmpeg-static');
+} catch (e) {
+    ffmpegPath = 'ffmpeg';
+}
 
 async function walk(dir) {
     const entries = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -48,13 +54,30 @@ async function walk(dir) {
                 // Skip if output already exists
                 await fs.promises.access(outPath, fs.constants.F_OK)
                     .then(() => { console.log('Skipping (webm exists):', outPath); return; })
-                    .catch(() => {
+                    .catch(async () => {
                         console.log('Converting GIF to WebM:', full, '->', outPath);
-                        // Use ffmpeg and scale so max(width,height) <= 1024 while preserving aspect ratio
-                        // Example ffmpeg filter: scale=if(gt(iw,ih),min(1024,iw),-2):if(gt(ih,iw),min(1024,ih),-2)
-                        const vf = "scale=if(gt(iw,ih),min(1024,iw),-2):if(gt(ih,iw),min(1024,ih),-2)";
+                        // Determine dimensions with sharp and set a simple scale filter so
+                        // that the larger side is at most 1024 while preserving aspect ratio.
+                        let vf;
+                        try {
+                            const meta = await sharp(full).metadata();
+                            if (meta && meta.width && meta.height) {
+                                if (meta.width > meta.height) {
+                                    const tw = Math.min(1024, meta.width);
+                                    vf = `scale=${tw}:-2`;
+                                } else {
+                                    const th = Math.min(1024, meta.height);
+                                    vf = `scale=-2:${th}`;
+                                }
+                            } else {
+                                vf = 'scale=1024:-2';
+                            }
+                        } catch (e) {
+                            vf = 'scale=1024:-2';
+                        }
+
                         const args = ['-y', '-i', full, '-vf', vf, '-c:v', 'libvpx-vp9', '-crf', '30', '-b:v', '0', '-an', outPath];
-                        const res = spawnSync('ffmpeg', args, { stdio: 'inherit' });
+                        const res = spawnSync(ffmpegPath, args, { stdio: 'inherit' });
                         if (res.error) throw res.error;
                         if (res.status !== 0) throw new Error('ffmpeg failed with status ' + res.status);
                     });
