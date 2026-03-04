@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import fs from "fs";
 
@@ -12,13 +13,26 @@ const allowedOrigins = [
 const app = express();
 const FILES_DIR = path.join(__dirname, "../files");
 
-// Restrict requests by Origin header
-app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (!origin || allowedOrigins.some((o) => origin.startsWith(o))) {
-        return next();
+// Use CORS middleware configured to allow specific origins
+app.use(
+    cors({
+        origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.some((o) => origin.startsWith(o))) return callback(null, true);
+            return callback(new Error("Origin not allowed"), false);
+        },
+        methods: ["GET", "HEAD", "OPTIONS"],
+        allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
+        optionsSuccessStatus: 204,
+    })
+);
+
+// Explicitly handle origin rejections to return 403 instead of default CORS error
+app.use((err: any, _req: any, res: any, next: any) => {
+    if (err && /Origin not allowed/.test(err.message)) {
+        return res.status(403).json({ error: "Origin not allowed" });
     }
-    return res.status(403).json({ error: "Origin not allowed" });
+    next(err);
 });
 
 // List files in root
