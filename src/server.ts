@@ -6,7 +6,6 @@ import fs from "fs";
 const allowedOrigins = [
     "http://localhost",
     "http://127.0.0.1",
-    "https://luciansolutions-dev.koyeb.app",
     "https://lucian.solutions",
 ];
 
