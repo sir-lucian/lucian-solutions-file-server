@@ -11,6 +11,7 @@ const startDir = process.argv[2] || path.join(process.cwd(), "files");
 const exts = [".png", ".jpg", ".jpeg"];
 const gifExt = ".gif";
 const { spawnSync } = require('child_process');
+let skipCount = 0;
 let ffmpegPath;
 try {
     ffmpegPath = require('ffmpeg-static');
@@ -32,7 +33,7 @@ async function walk(dir) {
             const webpPath = full + ".webp";
             try {
                 await fs.promises.access(webpPath, fs.constants.F_OK)
-                    .then(() => { console.log('Skipping (webp exists):', webpPath); return; })
+                    .then(() => { skipCount++; return; })
                     .catch(async () => {
                         console.log('Converting:', full, '->', webpPath);
                         // Resize so that neither width nor height exceed 1024px, keep aspect ratio, don't enlarge small images
@@ -54,7 +55,7 @@ async function walk(dir) {
             try {
                 // Skip if output already exists
                 await fs.promises.access(outPath, fs.constants.F_OK)
-                    .then(() => { console.log('Skipping (webm exists):', outPath); return; })
+                    .then(() => { skipCount++; return; })
                     .catch(async () => {
                         console.log('Converting GIF to WebM:', full, '->', outPath);
                         // Determine dimensions with sharp and set a simple scale filter so
@@ -103,4 +104,5 @@ async function walk(dir) {
     console.log("Starting conversion under", startDir);
     await walk(startDir);
     console.log("Done.");
+    console.log("Skipped conversions:", skipCount);
 })();
